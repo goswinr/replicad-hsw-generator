@@ -10,12 +10,21 @@ const Main = styled.div`
 
   grid-template:
     "nav nav" 30px
-    "menu main" calc(100vh - 30px - 4rem) / 250px auto;
+    "menu main" calc(100vh - 30px - 4rem) / 280px auto;
 
   height: 100vh;
   width: 100%;
   padding: 1rem 2rem 0.5rem 2rem;
   grid-gap: 1rem;
+
+  @media (max-width: 500px) {
+    height: auto;
+    grid-template:
+      "nav" 30px
+      "main" 
+        "menu" ;
+  }
+
 
   & > :first-child {
     grid-area: nav;
@@ -28,12 +37,15 @@ const Main = styled.div`
 
   & > :nth-child(2) {
     overflow-y: auto;
+    @media (max-width: 500px) {
+      overflow-y: hidden;
+    }
     grid-area: menu;
   }
 
   & > :nth-child(3) {
     grid-area: main;
-  }
+
   & > :nth-child(4) {
     position: absolute;
     bottom: 10px;
@@ -69,7 +81,23 @@ export default React.memo(function ReplicadApp() {
         </div>
         <Menu />
         <Viewer />
-        <Footer></Footer>
+        <Footer>
+          <a
+            href="https://github.com/sgenoud/replicad-honeycomb"
+            target="_blank"
+          >
+            GitHub
+          </a>
+          <a href="mailto:steve@sgenoud.com" target="_blank">
+            Email
+          </a>
+          <a href="https://carrots.sgenoud.com/" target="_blank">
+            Blog
+          </a>
+          <a href="https://toot.cafe/stevegenoud" target="_blank">
+            Mastodon
+          </a>
+        </Footer>
       </Main>
     </>
   );
