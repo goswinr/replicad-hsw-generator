@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
 
 import { InputBlock, Form, SaveButtonRow } from "./common";
-import { Preview } from "../components/Preview";
 
 import { HoneycombStructure } from "../cad/HoneycombStructure";
 import { OUTER_RADIUS } from "../cad/constants";
+import EditPlateShape from "./EditPlateShape";
 
 const STRUCTURE = new HoneycombStructure(OUTER_RADIUS);
 
@@ -17,6 +17,8 @@ export default observer(function EditGridForm() {
   const [rows, setRows] = useState(state.config?.rows || 5);
   const [columns, setColumns] = useState(state.config?.columns || 7);
 
+  const shapeEditor = useRef();
+
   const saveChanges = (e) => {
     e.preventDefault();
     const changes = {
@@ -25,6 +27,7 @@ export default observer(function EditGridForm() {
     };
 
     state.updateRowsAndCols(changes);
+    shapeEditor.current.saveChanges();
   };
 
   return (
@@ -59,6 +62,7 @@ export default observer(function EditGridForm() {
       <InputBlock title="Total height">
         {STRUCTURE.totalHeight(rows).toFixed(2)}mm
       </InputBlock>
+      <EditPlateShape ref={shapeEditor} />
     </>
   );
 });

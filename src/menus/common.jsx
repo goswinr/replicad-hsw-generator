@@ -3,9 +3,8 @@ import styled from "styled-components";
 import { observer } from "mobx-react";
 
 import useAppState from "../useAppState";
-import { SecondaryActionButton } from "../components/buttons.jsx";
 
-const InputTitle = styled.label`
+export const InputTitle = styled.label`
   font-variant: small-caps;
   font-size: 0.8em;
   font-weight: normal;
@@ -30,13 +29,9 @@ export const ActiveText = styled.span`
   cursor: pointer;
 `;
 
-export const Inline = styled.div`
+export const BaseInline = styled.div`
   display: flex;
   align-items: center;
-
-  & > input {
-    flex: 1 1 auto;
-  }
 
   & > label + input {
     margin-left: 0.3em;
@@ -44,6 +39,12 @@ export const Inline = styled.div`
 
   & > input + label {
     margin-left: 1em;
+  }
+`;
+
+export const Inline = styled(BaseInline)`
+  & > input {
+    flex: 1 1 auto;
   }
 `;
 

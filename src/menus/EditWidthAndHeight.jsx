@@ -30,7 +30,6 @@ export default observer(function EditGridForm() {
       columns,
       rows,
     };
-
     state.updateRowsAndCols(changes);
   };
 
@@ -63,7 +62,13 @@ export default observer(function EditGridForm() {
         {rows} rows, {columns} columns
       </div>
       <div>
-        <Preview rows={rows} columns={columns} width={width} height={height} />
+        <Preview
+          rows={rows}
+          columns={columns}
+          width={width}
+          height={height}
+          profileConfig={state.config.profileConfig}
+        />
       </div>
     </>
   );

@@ -11,6 +11,7 @@ import RedoIcon from "./icons/Redo";
 import DownloadIcon from "./icons/Download";
 import LoadingIcon from "./icons/Loading";
 
+import EditWidthAndHeight from "./menus/EditWidthAndHeight";
 import EditRowsAndCols from "./menus/EditRowsAndCols";
 import EditPlateShape from "./menus/EditPlateShape";
 
@@ -79,7 +80,7 @@ export default observer(() => {
         <option value="rowsAndCols">Rows and Columns</option>
         <option value="widthAndHeight">Width and Height</option>
       </select>
-      {selected === "widthAndHeight" && <EditPlateShape />}
+      {selected === "widthAndHeight" && <EditWidthAndHeight />}
       {selected === "rowsAndCols" && <EditRowsAndCols />}
     </Menu>
   );

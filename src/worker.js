@@ -61,9 +61,9 @@ async function run(config) {
   return meshShape(shape);
 }
 
-async function preview(hexConfig, borderConfig) {
+async function preview(hexConfig, borderConfig, profileConfig) {
   await started;
-  const shapes = await showPreview(hexConfig, borderConfig);
+  const shapes = await showPreview(hexConfig, borderConfig, profileConfig);
 
   return shapes.map((shape) => ({
     format: "svg",

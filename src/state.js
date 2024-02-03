@@ -34,6 +34,15 @@ const AppState = types
       types.model({
         rows: types.optional(types.number, 8),
         columns: types.optional(types.number, 7),
+        profileConfig: types.optional(
+          types.model({
+            disableLeft: types.optional(types.boolean, false),
+            disableRight: types.optional(types.boolean, false),
+            disableTop: types.optional(types.boolean, false),
+            disableBottom: types.optional(types.boolean, false),
+          }),
+          {}
+        ),
       }),
       {}
     ),
@@ -56,6 +65,17 @@ const AppState = types
       self.config.rows = rows;
       self.config.columns = columns;
     },
+    updateProfile({ disableLeft, disableRight, disableTop, disableBottom }) {
+      if (disableLeft !== undefined)
+        self.config.profileConfig.disableLeft = disableLeft;
+      if (disableRight !== undefined)
+        self.config.profileConfig.disableRight = disableRight;
+      if (disableTop !== undefined)
+        self.config.profileConfig.disableTop = disableTop;
+      if (disableBottom !== undefined)
+        self.config.profileConfig.disableBottom = disableBottom;
+    },
+
     process: flow(function* process() {
       self.processing = true;
       try {

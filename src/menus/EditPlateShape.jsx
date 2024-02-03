@@ -1,68 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import { observer } from "mobx-react";
-
-import { HoneycombStructure } from "../cad/HoneycombStructure";
-import { OUTER_RADIUS } from "../cad/constants";
 
 import useAppState from "../useAppState";
 
-import { InputBlock, Form, SaveButtonRow } from "./common";
-import { Preview } from "../components/Preview";
+import { InputTitle, BaseInline } from "./common";
 
-const STRUCTURE = new HoneycombStructure(OUTER_RADIUS);
+export default observer(
+  React.forwardRef(function EditGridForm(_, ref) {
+    const state = useAppState();
 
-export default observer(function EditGridForm() {
-  const state = useAppState();
+    const [left, setLeft] = useState(state.config.profileConfig.disableLeft);
+    const [right, setRight] = useState(state.config.profileConfig.disableRight);
+    const [top, setTop] = useState(state.config.profileConfig.disableTop);
+    const [bottom, setBottom] = useState(
+      state.config.profileConfig.disableBottom
+    );
 
-  const [width, setWidth] = useState(
-    Math.ceil(STRUCTURE.totalWidth(state.config?.rows || 5))
-  );
-  const [height, setHeight] = useState(
-    Math.ceil(STRUCTURE.totalHeight(state.config?.columns || 7))
-  );
+    useImperativeHandle(ref, () => {
+      return {
+        saveChanges: () => {
+          const changes = {
+            disableLeft: left,
+            disableRight: right,
+            disableTop: top,
+            disableBottom: bottom,
+          };
 
-  const columns = STRUCTURE.columnsForWidth(width);
-  const rows = STRUCTURE.rowsForHeight(height);
+          state.updateProfile(changes);
+        },
+      };
+    });
 
-  const saveChanges = (e) => {
-    e.preventDefault();
-    const changes = {
-      columns,
-      rows,
-    };
-
-    state.updateRowsAndCols(changes);
-  };
-
-  return (
-    <>
-      <Form onSubmit={saveChanges}>
-        <SaveButtonRow />
-        <InputBlock title="Height (mm)" htmlFor="height">
+    return (
+      <>
+        <InputTitle as="div" style={{ marginTop: "2em" }}>
+          Flat borders
+        </InputTitle>
+        <BaseInline>
           <input
-            id="height"
-            type="number"
-            step="1"
-            min="50"
-            value={height}
-            onChange={(e) => setHeight(parseFloat(e.target.value, 10))}
+            id="left"
+            type="checkbox"
+            checked={left}
+            onChange={(e) => setLeft(e.target.checked)}
           />
-        </InputBlock>
-        <InputBlock title="Width (mm)" htmlFor="width">
+          <label htmlFor="left">Left</label>
+        </BaseInline>
+        <BaseInline>
           <input
-            id="width"
-            type="number"
-            step="1"
-            min="50"
-            value={width}
-            onChange={(e) => setWidth(parseFloat(e.target.value, 10))}
+            id="top"
+            type="checkbox"
+            checked={top}
+            onChange={(e) => setTop(e.target.checked)}
           />
-        </InputBlock>
-      </Form>
-      <div>
-        {rows} rows, {columns} columns
-      </div>
-      <Preview rows={rows} columns={columns} width={width} height={height} />
-    </>
-  );
-});
+          <label htmlFor="top">Top</label>
+        </BaseInline>
+        <BaseInline>
+          <input
+            id="right"
+            type="checkbox"
+            checked={right}
+            onChange={(e) => setRight(e.target.checked)}
+          />
+          <label htmlFor="right">Right</label>
+        </BaseInline>
+        <BaseInline>
+          <input
+            id="bottom"
+            type="checkbox"
+            checked={bottom}
+            onChange={(e) => setBottom(e.target.checked)}
+          />
+          <label htmlFor="bottom">Bottom</label>
+        </BaseInline>
+      </>
+    );
+  })
+);

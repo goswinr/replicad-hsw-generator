@@ -38,31 +38,82 @@ const shellExtrude = (base, height) => {
   );
 };
 
-export const exteriorProfile = (radius, cutout, nRows, nColumns) => {
+const drawOusideRectangle = (
+  width,
+  height,
+  {
+    disableLeft = false,
+    disableRight = false,
+    disableTop = false,
+    disableBottom = false,
+  } = {}
+) => {
+  const radius = 5;
+  const pen = draw([-(width / 2), -height / 2]).hLine(width);
+  if (disableBottom && disableRight) {
+    pen.customCorner(radius);
+  }
+  pen.vLine(height);
+  if (disableTop && disableRight) {
+    pen.customCorner(radius);
+  }
+  pen.hLine(-width);
+  if (disableTop && disableLeft) {
+    pen.customCorner(radius);
+  }
+  if (disableBottom && disableLeft) {
+    return pen.closeWithCustomCorner(radius);
+  }
+  return pen.close();
+};
+
+export const exteriorProfile = (
+  radius,
+  cutout,
+  nRows,
+  nColumns,
+  {
+    disableLeft = false,
+    disableRight = false,
+    disableTop = false,
+    disableBottom = false,
+  } = {}
+) => {
   const structure = new HoneycombStructure(radius);
 
-  let base = drawRectangle(
+  let base = drawOusideRectangle(
     structure.totalWidth(nColumns),
-    structure.totalHeight(nRows)
+    structure.totalHeight(nRows),
+    { disableBottom, disableLeft, disableRight, disableTop }
   );
 
-  const columnCutouts = range(nRows + 1)
+  const columnCutouts = range(nRows + 2)
     .map((i) => cutout.clone().translate(0, i * structure.hexInnerLength))
-    .map((cell) => cell.translate(0, -structure.totalHeight(nRows - 1) / 2))
+    .map((cell) => cell.translate(0, -structure.totalHeight(nRows + 1) / 2))
     .flatMap((cell) => {
       const xDisplacement =
         structure.totalWidth(nColumns - 1) / 2 -
         structure.hexSideLength / 4 +
         structure.displacement;
-      return [
-        cell.clone().translate(-xDisplacement, -structure.hexInnerLength / 2),
-        cell
+
+      const cutouts = [];
+      if (!disableLeft) {
+        const leftCut = cell
+          .clone()
+          .translate(-xDisplacement, -structure.hexInnerLength / 2);
+        cutouts.push(leftCut);
+      }
+      if (!disableRight) {
+        const rightCut = cell
           .clone()
           .translate(
             xDisplacement,
             nColumns % 2 ? structure.hexInnerLength / 2 : 0
-          ),
-      ];
+          );
+        cutouts.push(rightCut);
+      }
+
+      return cutouts;
     });
   columnCutouts.forEach((cutout) => {
     base = base.cut(cutout);
@@ -77,13 +128,21 @@ export const exteriorProfile = (radius, cutout, nRows, nColumns) => {
       )
     )
     .flatMap((cell) => {
-      return [
-        cell.translate(
+      const cutouts = [];
+      if (!disableBottom) {
+        const bottomCut = cell.translate(
           -structure.displacement,
           -structure.totalHeight(nRows) / 2
-        ),
-        cell.translate(0, structure.totalHeight(nRows) / 2),
-      ];
+        );
+        cutouts.push(bottomCut);
+      }
+
+      if (!disableTop) {
+        const topCut = cell.translate(0, structure.totalHeight(nRows) / 2);
+        cutouts.push(topCut);
+      }
+
+      return cutouts;
     });
 
   rowCutouts.forEach((cutout) => {
@@ -93,25 +152,30 @@ export const exteriorProfile = (radius, cutout, nRows, nColumns) => {
   return base;
 };
 
-export const honeycombProfile = (nRows, nColumns) => {
+export const honeycombProfile = (nRows, nColumns, profileConfig) => {
   return exteriorProfile(
     OUTER_RADIUS,
     drawPolysides(OUTER_RADIUS, 6, 0).rotate(30),
     nRows,
-    nColumns
+    nColumns,
+    profileConfig
   );
 };
 
-export function preview({ columns, rows }, { width, height }) {
-  return [honeycombProfile(rows, columns), drawRectangle(width, height)];
+export function preview({ columns, rows, profileConfig }, { width, height }) {
+  return [
+    honeycombProfile(rows, columns, profileConfig),
+    drawRectangle(width, height),
+  ];
 }
 
-export default function honeycomb({ rows, columns }) {
+export default function honeycomb({ rows, columns, profileConfig }) {
   const outsideProfile = exteriorProfile(
     OUTER_RADIUS,
     drawPolysides(OUTER_RADIUS, 6, 0).rotate(30),
     rows,
-    columns
+    columns,
+    profileConfig
   );
 
   const [outside, outsideBottom, outsideTop] = shellExtrude(
