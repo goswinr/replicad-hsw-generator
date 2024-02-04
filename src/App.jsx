@@ -83,7 +83,7 @@ export default React.memo(function ReplicadApp() {
         <Viewer />
         <Footer>
           <a
-            href="https://github.com/sgenoud/replicad-honeycomb"
+            href="https://github.com/sgenoud/replicad-hsw-generator"
             target="_blank"
           >
             GitHub
@@ -94,7 +94,7 @@ export default React.memo(function ReplicadApp() {
           <a href="https://carrots.sgenoud.com/" target="_blank">
             Blog
           </a>
-          <a href="https://toot.cafe/stevegenoud" target="_blank">
+          <a href="https://toot.cafe/@stevegenoud" target="_blank">
             Mastodon
           </a>
         </Footer>
